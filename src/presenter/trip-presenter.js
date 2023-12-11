@@ -6,7 +6,6 @@ import EditFormView from '../view/edit-form-view.js';
 import EventView from '../view/event-view.js';
 import { render } from '../render.js';
 
-
 export default class TripPresenter {
   eventsListComponent = new EventsListView();
   editFormComponent = new EditFormView();

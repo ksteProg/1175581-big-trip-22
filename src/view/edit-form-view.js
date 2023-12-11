@@ -169,7 +169,7 @@ function createEditFormTemplate() {
 export default class EditFormView {
 
   getTemplate() {
-    return createEditFormTemplate;
+    return createEditFormTemplate();
   }
 
   getElement() {

@@ -31,7 +31,7 @@ function createFilterTemplate() {
 export default class FilterView {
 
   getTemplate() {
-    return createFilterTemplate;
+    return createFilterTemplate();
   }
 
   getElement() {
