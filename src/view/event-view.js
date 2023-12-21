@@ -1,31 +1,31 @@
 import { createElement } from '../render.js';
 
-function createEventTemplate(event) {
-  const {date, typeTrip, city, timeBegin, timeEnd, durationTime, price, isFavorite, offers} = event;
+function createEventTemplate(point) {
+  const { basePrice, dateFrom, dateTo, destination, isFavorite, type } = point;
   return (`<li class="trip-events__item">
   <div class="event">
-    <time class="event__date" datetime="2019-03-18">${date}</time>
+    <time class="event__date" datetime="2019-03-18">date</time>
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src="img/icons/${typeTrip.toLowerCase()}.png" alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${typeTrip} ${city['name']}</h3>
+    <h3 class="event__title">${type} ${destination['name']}</h3>
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="2019-03-18T10:30">${timeBegin}</time>
+        <time class="event__start-time" datetime="2019-03-18T10:30">${dateFrom}</time>
         &mdash;
-        <time class="event__end-time" datetime="2019-03-18T11:00">${timeEnd}</time>
+        <time class="event__end-time" datetime="2019-03-18T11:00">${dateTo}</time>
       </p>
-      <p class="event__duration">${durationTime}</p>
+      <p class="event__duration">durationTime</p>
     </div>
     <p class="event__price">
-      &euro;&nbsp;<span class="event__price-value">${price}</span>
+      &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
     </p>
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
       <li class="event__offer">
-        <span class="event__offer-title">${offers['name']}</span>
+        <span class="event__offer-title">"offers['name']}"</span>
         &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offers['price']}</span>
+        <span class="event__offer-price">"offers['name']}"</span>
       </li>
     </ul>
     <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
@@ -43,12 +43,12 @@ function createEventTemplate(event) {
 }
 
 export default class EventView {
-  constructor(event) {
-    this.event = event;
+  constructor(point) {
+    this.point = point;
   }
 
   getTemplate() {
-    return createEventTemplate(this.event);
+    return createEventTemplate(this.point);
   }
 
   getElement() {
