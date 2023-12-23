@@ -2,7 +2,7 @@ import { getRandomNumber } from './utils';
 
 const DESTINATIONS = [
   {
-    id: 0,
+    id: 'cfe416cq-10xa-ye10-8077-2fs9a01edcab',
     description: 'город и коммуна на востоке Франции, в департаменте Верхняя Савойя (историческая область Савойя).',
     name: 'Chamonix',
     pictures: [
@@ -12,7 +12,7 @@ const DESTINATIONS = [
       }]
   },
   {
-    id: 1,
+    id: 'cfe416cq-11xa-ye10-8077-2fs9a01edcab',
     description: 'столица и крупнейший город Нидерландов. Является столицей королевства с 1814 года.',
     name: 'Amsterdam',
     pictures: [
@@ -22,7 +22,7 @@ const DESTINATIONS = [
       }]
   },
   {
-    id: 2,
+    id: 'cfe416cq-12xa-ye10-8077-2fs9a01edcab',
     description: 'город на юго-западе Швейцарии. Столица одноимённого франкоязычного кантона и административный центр одноимённой коммуны.',
     name: 'Geneva',
     pictures: [
