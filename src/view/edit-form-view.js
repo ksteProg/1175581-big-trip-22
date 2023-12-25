@@ -12,27 +12,16 @@ function createOfferTemplate(offer) {
 }
 
 function createTypeItemTemplate(type) {
+  const typeName = type[0].toUpperCase() + type.substring(1);
   return `<div class="event__type-item">
   <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-  <label class="event__type-label  event__type-label--${type}" for="event-type-"${type}"-1">${type[0].toUpperCase() + type.substring(1)}</label>
+  <label class="event__type-label  event__type-label--${type}" for="event-type-"${type}"-1">${typeName}</label>
 </div>`;
 }
 
-function createDestinationPicturesTemplate(picture) {
-  return `
- <img class="event__photo" src="${picture.src}" alt="Event photo">`;
-}
+function createEditFormTemplate(types, offers, destination, destinations, event) {
 
-function createDestinationOptionTemplate(destination) {
-  return `
-  <option value="${destination.name}"></option>`;
-}
-
-function createEditFormTemplate(data) {
-
-  const { offers, destination, destinations, formEvent, types } = data;
-
-  const { basePrice, dateFrom, dateTo, type } = formEvent;
+  const { basePrice, dateFrom, dateTo, type } = event;
 
   const pictures = destination.pictures;
 
@@ -59,7 +48,7 @@ function createEditFormTemplate(data) {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${destinations.map((destinationItem) => createDestinationOptionTemplate(destinationItem)).join('')}
+          ${destinations.map((destinaton) => `<option value="${destinaton.name}"></option>`).join('')}
         </datalist>
       </div>
 
@@ -97,7 +86,7 @@ function createEditFormTemplate(data) {
 
         <div class="event__photos-container">
           <div class="event__photos-tape">
-          ${pictures.map((picture) => createDestinationPicturesTemplate(picture)).join('')}
+          ${pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="Event photo">`).join('')}
           </div>
         </div>
       </section>
@@ -108,12 +97,16 @@ function createEditFormTemplate(data) {
 }
 
 export default class EditFormView {
-  constructor(data) {
-    this.data = data;
+  constructor({types, offers, destination, destinations, event}) {
+    this.types = types;
+    this.offers = offers;
+    this.destination = destination;
+    this.destinations = destinations;
+    this.event = event;
   }
 
   getTemplate() {
-    return createEditFormTemplate(this.data);
+    return createEditFormTemplate(this.types, this.offers, this.destination, this.destinations, this.event);
   }
 
   getElement() {

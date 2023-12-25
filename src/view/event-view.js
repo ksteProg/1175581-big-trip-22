@@ -8,15 +8,16 @@ function createOfferTemplate(offer) {
 </li>`;
 }
 
-function createEventTemplate(data) {
-  const { basePrice, dateFrom, dateTo, isFavorite, type } = data.events;
+function createEventTemplate(destination, offers, event) {
+  const { basePrice, dateFrom, dateTo, isFavorite, type } = event;
+
   return (`<li class="trip-events__item">
   <div class="event">
     <time class="event__date" datetime="2019-03-18">date</time>
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} ${data.destination.name}</h3>
+    <h3 class="event__title">${type} ${destination.name}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="2019-03-18T10:30">${dateFrom}</time>
@@ -30,7 +31,7 @@ function createEventTemplate(data) {
     </p>
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-      ${data.offers.map((offer) => createOfferTemplate(offer)).join('')}
+      ${offers.map((offer) => createOfferTemplate(offer)).join('')}
     </ul>
     <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
       <span class="visually-hidden">Add to favorite</span>
@@ -47,12 +48,14 @@ function createEventTemplate(data) {
 }
 
 export default class EventView {
-  constructor(data) {
-    this.data = data;
+  constructor({ destination, offers, event }) {
+    this.destination = destination;
+    this.offers = offers;
+    this.event = event;
   }
 
   getTemplate() {
-    return createEventTemplate(this.data);
+    return createEventTemplate(this.destination, this.offers, this.event);
   }
 
   getElement() {

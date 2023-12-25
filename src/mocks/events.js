@@ -1,3 +1,6 @@
+import { OFFERS } from './offers';
+import { getMultipleRandom } from './utils';
+
 const EVENTS = [
   {
     id: 'f4b62099-293f-4c3d-a700-94eec4a2808c',
@@ -5,8 +8,7 @@ const EVENTS = [
     dateFrom: '19/03/19 00:00',
     dateTo: '20/03/19 00:00',
     destination: 'cfe416cq-10xa-ye10-8077-2fs9a01edcab',
-    offers: ['b4c3e4e6-9053-42ce-b747-e281314baa01',
-      'b4c3e4e6-9053-42ce-b747-e281314baa02'],
+    offers: getMultipleRandom(OFFERS.find((item) => item.type === 'taxi').offers, 3),
     type: 'taxi'
   },
   {
@@ -16,7 +18,7 @@ const EVENTS = [
     dateTo: '22/03/19 00:00',
     destination: 'cfe416cq-11xa-ye10-8077-2fs9a01edcab',
     isFavorite: true,
-    offers: ['b4c3e4e6-9053-42ce-b747-e281314baa05'],
+    offers: getMultipleRandom(OFFERS.find((item) => item.type === 'bus').offers, 2),
     type: 'bus'
   },
   {
@@ -26,7 +28,7 @@ const EVENTS = [
     dateTo: '24/03/19 00:00',
     destination: 'cfe416cq-12xa-ye10-8077-2fs9a01edcab',
     isFavorite: false,
-    offers: [],
+    offers: getMultipleRandom(OFFERS.find((item) => item.type === 'flight').offers, 3),
     type: 'flight'
   }
 ];

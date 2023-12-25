@@ -7,7 +7,7 @@ export default class EventsModel {
   events = EVENTS;
   offers = OFFERS;
   destinations = DESTINATIONS;
-  formEvent = getRandomArrayElement(EVENTS);
+  event = getRandomArrayElement(EVENTS);
 
   getEvents() {
     return this.events;
@@ -18,17 +18,17 @@ export default class EventsModel {
   }
 
   getTypes() {
-    return OFFERS.map((item) => item.type);
+    return this.offers.map((item) => item.type);
   }
 
   getOffersByType(event) {
-    const offersItem = OFFERS.find((item) => event.type === item.type);
+    const offersItem = this.offers.find((item) => event.type === item.type);
     return offersItem.offers;
   }
 
   getOffersById(event) {
-    const currentOffers = OFFERS.find((offerItem) => event.type === offerItem.type);
-    return event.offers.map((eventOffer) => currentOffers.offers.find((offer) => eventOffer === offer.id));
+    const currentOffers = this.offers.find((offerItem) => event.type === offerItem.type);
+    return event.offers.map((eventOffer) => currentOffers.offers.find((offer) => eventOffer.id === offer.id));
   }
 
   getDestinations() {
@@ -36,10 +36,10 @@ export default class EventsModel {
   }
 
   getDestinationById(event) {
-    return DESTINATIONS.find((destination) => event.destination === destination.id);
+    return this.destinations.find((destination) => event.destination === destination.id);
   }
 
-  getFormEvent() {
-    return this.formEvent;
+  getEvent() {
+    return this.event;
   }
 }
