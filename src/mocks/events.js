@@ -8,8 +8,10 @@ const EVENTS = [
     dateFrom: '19/03/19 00:00',
     dateTo: '20/03/19 00:00',
     destination: 'cfe416cq-10xa-ye10-8077-2fs9a01edcab',
-    offers: getMultipleRandom(OFFERS.find((item) => item.type === 'taxi').offers, 3),
-    type: 'taxi'
+    get offers() {
+      return getMultipleRandom(OFFERS.find((item) => item.type === this.type).offers);
+    },
+    type: 'taxi',
   },
   {
     id: 'f4b62099-293f-4c3d-a701-94eec4a2808c',
@@ -18,7 +20,9 @@ const EVENTS = [
     dateTo: '22/03/19 00:00',
     destination: 'cfe416cq-11xa-ye10-8077-2fs9a01edcab',
     isFavorite: true,
-    offers: getMultipleRandom(OFFERS.find((item) => item.type === 'bus').offers, 2),
+    get offers() {
+      return getMultipleRandom(OFFERS.find((item) => item.type === this.type).offers);
+    },
     type: 'bus'
   },
   {
@@ -28,7 +32,9 @@ const EVENTS = [
     dateTo: '24/03/19 00:00',
     destination: 'cfe416cq-12xa-ye10-8077-2fs9a01edcab',
     isFavorite: false,
-    offers: getMultipleRandom(OFFERS.find((item) => item.type === 'flight').offers, 3),
+    get offers() {
+      return getMultipleRandom(OFFERS.find((item) => item.type === this.type).offers);
+    },
     type: 'flight'
   }
 ];
