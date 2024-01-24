@@ -15,7 +15,7 @@ function createTypeItemTemplate(type) {
   const typeName = type[0].toUpperCase() + type.substring(1);
   return `<div class="event__type-item">
   <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-  <label class="event__type-label  event__type-label--${type}" for="event-type-"${type}"-1">${typeName}</label>
+  <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${typeName}</label>
 </div>`;
 }
 
@@ -102,17 +102,27 @@ export default class EditFormView extends AbstractView {
   #destination = null;
   #destinations = null;
   #event = null;
+  #handleFormSubmit = null;
 
-  constructor({types, offers, destination, destinations, event}) {
+  constructor({types, offers, destination, destinations, event, onFormSubmit}) {
     super();
     this.#types = types;
     this.#offers = offers;
     this.#destination = destination;
     this.#destinations = destinations;
     this.#event = event;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
   }
 
   get template() {
     return createEditFormTemplate(this.#types, this.#offers, this.#destination, this.#destinations, this.#event);
   }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }

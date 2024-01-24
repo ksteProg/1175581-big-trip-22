@@ -133,21 +133,21 @@ const OFFERS = [
       }]
   },
   {
-    type: 'Restaurant',
+    type: 'restaurant',
     offers: [
       {
         id: 'b4c3e4e6-9053-42ce-b747-e281314baa22',
-        title: '1(Restaurant)',
+        title: '1(restaurant)',
         price: 98
       },
       {
         id: 'b4c3e4e6-9053-42ce-b747-e281314baa23',
-        title: '2(Restaurant)',
+        title: '2(restaurant)',
         price: 567
       },
       {
         id: 'b4c3e4e6-9053-42ce-b747-e281314baa24',
-        title: '3(Restaurant)',
+        title: '3(restaurant)',
         price: 768
       }]
   }
