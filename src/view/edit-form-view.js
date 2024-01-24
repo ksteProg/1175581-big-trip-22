@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createOfferTemplate(offer) {
   return `<div class="event__offer-selector">
@@ -15,7 +15,7 @@ function createTypeItemTemplate(type) {
   const typeName = type[0].toUpperCase() + type.substring(1);
   return `<div class="event__type-item">
   <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-  <label class="event__type-label  event__type-label--${type}" for="event-type-"${type}"-1">${typeName}</label>
+  <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${typeName}</label>
 </div>`;
 }
 
@@ -96,27 +96,33 @@ function createEditFormTemplate(types, offers, destination, destinations, event)
 `;
 }
 
-export default class EditFormView {
-  constructor({types, offers, destination, destinations, event}) {
-    this.types = types;
-    this.offers = offers;
-    this.destination = destination;
-    this.destinations = destinations;
-    this.event = event;
+export default class EditFormView extends AbstractView {
+  #types = null;
+  #offers = null;
+  #destination = null;
+  #destinations = null;
+  #event = null;
+  #handleFormSubmit = null;
+
+  constructor({types, offers, destination, destinations, event, onFormSubmit}) {
+    super();
+    this.#types = types;
+    this.#offers = offers;
+    this.#destination = destination;
+    this.#destinations = destinations;
+    this.#event = event;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
   }
 
-  getTemplate() {
-    return createEditFormTemplate(this.types, this.offers, this.destination, this.destinations, this.event);
+  get template() {
+    return createEditFormTemplate(this.#types, this.#offers, this.#destination, this.#destinations, this.#event);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }

@@ -2,10 +2,10 @@ const getRandomArrayElement = (array) => array[Math.floor(Math.random() * (array
 
 const getRandomNumber = () => Math.floor(Math.random() * 99);
 
-const getMultipleRandom = (arr, num) => {
+const getMultipleRandom = (arr) => {
   const shuffled = [...arr].sort(() => 0.5 - Math.random());
 
-  return shuffled.slice(0, num);
+  return shuffled.slice(0, Math.floor(Math.random() * shuffled.length));
 };
 
 export { getRandomArrayElement, getRandomNumber, getMultipleRandom};
