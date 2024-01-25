@@ -4,7 +4,8 @@ import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventView from '../view/event-view.js';
 import EditFormView from '../view/edit-form-view.js';
-import {render, replace} from '../framework/render.js';
+import NoEventsView from '../view/no-events-view.js';
+import { render, replace } from '../framework/render.js';
 
 export default class TripPresenter {
   #eventsListComponent = new EventsListView();
@@ -77,8 +78,13 @@ export default class TripPresenter {
     render(new SortView(), this.#eventsElement);
     render(this.#eventsListComponent, this.#eventsElement);
 
-    for (const event of this.#events) {
-      this.#renderEvent(event);
+    if (this.#events.length === 0) {
+      render(new NoEventsView(), this.#eventsElement);
+    } else {
+      for (const event of this.#events) {
+        this.#renderEvent(event);
+      }
     }
+
   }
 }
