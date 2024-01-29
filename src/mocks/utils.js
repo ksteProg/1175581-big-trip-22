@@ -8,4 +8,6 @@ const getMultipleRandom = (arr) => {
   return shuffled.slice(0, Math.floor(Math.random() * shuffled.length));
 };
 
-export { getRandomArrayElement, getRandomNumber, getMultipleRandom};
+const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
+
+export { getRandomArrayElement, getRandomNumber, getMultipleRandom, updateItem};
