@@ -4,8 +4,9 @@ import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventPresenter from './event-presenter.js';
 import NoEventsView from '../view/no-events-view.js';
-import { render, RenderPosition, replace } from '../framework/render.js';
-import { updateItem } from '../mocks/utils.js';
+import { render, RenderPosition } from '../framework/render.js';
+import { updateItem, sortByTime, sortByPrice } from '../mocks/utils.js';
+import { SortType } from '../mocks/const.js';
 
 export default class TripPresenter {
   #eventsListComponent = new EventsListView();
@@ -13,11 +14,14 @@ export default class TripPresenter {
   #filtersElement = null;
   #eventsElement = null;
   #eventsModel = null;
-  #sortComponent = new SortView();
+  #sortComponent = null;
   #noEventsComponent = new NoEventsView();
   #filterComponent = new FilterView();
   #tripInfoComponent = new TripInfoView();
   #eventPresenters = new Map();
+
+  #currentSortType = SortType.DEFAULT;
+  #sourcedEvents = [];
 
   #events = null;
   #event = null;
@@ -33,19 +37,51 @@ export default class TripPresenter {
     this.#events = [...this.#eventsModel.events];
     this.#event = this.#eventsModel.event;
 
+    this.#sourcedEvents = [...this.#eventsModel.events];
+
     this.#renderBoard();
   }
 
-  #handleEventChange = (updatedTask) => {
-    this.#events = updateItem(this.#events, updatedTask);
-    this.#eventPresenters.get(updatedTask.id).init(updatedTask);
+  #handleEventChange = (updatedEvent) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#sourcedEvents = updateItem(this.#sourcedEvents, updatedEvent);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
   };
 
   #handleModeChange = () => {
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
+  #sortEvents(sortType) {
+    switch (sortType) {
+      case SortType.TIME:
+        this.#events.sort(sortByTime);
+        break;
+      case SortType.PRICE:
+        this.#events.sort(sortByPrice);
+        break;
+      default:
+        this.#events = [...this.#sourcedEvents];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortEvents(sortType);
+    this.#clearEventList();
+    this.#renderEvents();
+  };
+
   #renderSort() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
     render(this.#sortComponent, this.#eventsElement, RenderPosition.AFTERBEGIN);
   }
 
