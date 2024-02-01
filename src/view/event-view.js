@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createOfferTemplate(offer) {
   return `<li class="event__offer">
@@ -47,7 +47,7 @@ function createEventTemplate(destination, offers, event) {
   );
 }
 
-export default class EventView extends AbstractView {
+export default class EventView extends AbstractStatefulView {
   #destination = null;
   #offers = null;
   #event = null;
@@ -61,7 +61,6 @@ export default class EventView extends AbstractView {
     this.#event = event;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
-
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
 

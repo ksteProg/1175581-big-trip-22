@@ -40,6 +40,7 @@ export default class EventPresenter {
     this.#editFormComponent = new EditFormView({
       types: this.#eventsModel.types,
       offers: this.#eventsModel.getOffersByType(event),
+      allOffers: this.#eventsModel.offers,
       destination: this.#eventsModel.getDestinationById(event),
       destinations: this.#eventsModel.destinations,
       event: this.#event,
@@ -71,6 +72,7 @@ export default class EventPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#editFormComponent.reset(this.#event);
       this.#replaceFormToEvent();
     }
   }
@@ -78,6 +80,8 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      console.log(this.#event);
+      this.#editFormComponent.reset(this.#event);
       this.#replaceFormToEvent();
     }
   };
@@ -99,7 +103,8 @@ export default class EventPresenter {
     this.#replaceEventToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (event) => {
+    this.#handleDataChange(event);
     this.#replaceFormToEvent();
   };
 
