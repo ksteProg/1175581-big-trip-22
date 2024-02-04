@@ -10,9 +10,6 @@ const getMultipleRandom = (arr) => {
   return shuffled.slice(0, Math.floor(Math.random() * shuffled.length));
 };
 
-const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
-
-
 function sortByTime(eventA, eventB) {
   return getEventDuration(eventB) - getEventDuration(eventA);
 }
@@ -25,4 +22,4 @@ function getEventDuration(event) {
   return dayjs(event.dateTo).diff(dayjs(event.dateFrom));
 }
 
-export { getRandomArrayElement, getRandomNumber, getMultipleRandom, updateItem, sortByTime, sortByPrice};
+export { getRandomArrayElement, getRandomNumber, getMultipleRandom, sortByTime, sortByPrice};

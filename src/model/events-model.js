@@ -1,9 +1,10 @@
+import Observable from '../framework/observable.js';
 import { EVENTS } from '../mocks/events.js';
 import { OFFERS } from '../mocks/offers.js';
 import { DESTINATIONS } from '../mocks/destinations.js';
 import { getRandomArrayElement } from '../mocks/utils.js';
 
-export default class EventsModel {
+export default class EventsModel extends Observable {
   #events = EVENTS;
   #offers = OFFERS;
   #destinations = DESTINATIONS;
@@ -21,25 +22,51 @@ export default class EventsModel {
     return this.#offers.map((item) => item.type);
   }
 
-  getOffersByType(event) {
-    const offersItem = this.#offers.find((item) => event.type === item.type);
-    return offersItem.offers;
-  }
-
-  getOffersById(event) {
-    const currentOffers = this.#offers.find((offerItem) => event.type === offerItem.type);
-    return event.offers.map((eventOfferId) => currentOffers.offers.find((offer) => eventOfferId === offer.id));
-  }
-
   get destinations() {
     return this.#destinations;
   }
 
-  getDestinationById(event) {
-    return this.#destinations.find((destination) => event.destination === destination.id);
-  }
-
   get event() {
     return this.#event;
+  }
+
+  updateEvent(updateType, update) {
+    const index = this.#events.findIndex((event) => event.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t update unexisting task');
+    }
+
+    this.#events = [
+      ...this.#events.slice(0, index),
+      update,
+      ...this.#events.slice(index + 1),
+    ];
+
+    this._notify(updateType, update);
+  }
+
+  addTask(updateType, update) {
+    this.#events = [
+      update,
+      ...this.#events,
+    ];
+
+    this._notify(updateType, update);
+  }
+
+  deleteTask(updateType, update) {
+    const index = this.#events.findIndex((task) => task.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting task');
+    }
+
+    this.#events = [
+      ...this.#events.slice(0, index),
+      ...this.#events.slice(index + 1),
+    ];
+
+    this._notify(updateType);
   }
 }
