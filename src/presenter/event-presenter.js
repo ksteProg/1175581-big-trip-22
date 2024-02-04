@@ -26,7 +26,6 @@ export default class EventPresenter {
   }
 
   init(event) {
-    console.log(event);
     this.#event = event;
     const prevEventComponent = this.#eventComponent;
     const prevEditFormComponent = this.#editFormComponent;
@@ -39,9 +38,7 @@ export default class EventPresenter {
     });
     this.#editFormComponent = new EditFormView({
       types: this.#eventsModel.types,
-      offers: this.#eventsModel.getOffersByType(event),
       allOffers: this.#eventsModel.offers,
-      destination: this.#eventsModel.getDestinationById(event),
       destinations: this.#eventsModel.destinations,
       event: this.#event,
       onFormSubmit: this.#handleFormSubmit,
