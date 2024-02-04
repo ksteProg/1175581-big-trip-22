@@ -1,5 +1,4 @@
 import { OFFERS } from './offers';
-import { getMultipleRandom } from './utils';
 import { nanoid } from 'nanoid';
 
 const EVENTS = [
@@ -11,7 +10,8 @@ const EVENTS = [
     destination: 'cfe416cq-10xa-ye10-8077-2fs9a01edcab',
     isFavorite: false,
     get offers() {
-      return getMultipleRandom(OFFERS.find((item) => item.type === this.type).offers);
+      const offers = OFFERS.find((item) => item.type === this.type).offers;
+      return offers.map((offer) => offer.id);
     },
     type: 'taxi',
   },
@@ -23,7 +23,8 @@ const EVENTS = [
     destination: 'cfe416cq-11xa-ye10-8077-2fs9a01edcab',
     isFavorite: true,
     get offers() {
-      return getMultipleRandom(OFFERS.find((item) => item.type === this.type).offers);
+      const offers = OFFERS.find((item) => item.type === this.type).offers;
+      return offers.map((offer) => offer.id);
     },
     type: 'bus'
   },
@@ -35,7 +36,8 @@ const EVENTS = [
     destination: 'cfe416cq-12xa-ye10-8077-2fs9a01edcab',
     isFavorite: false,
     get offers() {
-      return getMultipleRandom(OFFERS.find((item) => item.type === this.type).offers);
+      const offers = OFFERS.find((item) => item.type === this.type).offers;
+      return offers.map((offer) => offer.id);
     },
     type: 'flight'
   }

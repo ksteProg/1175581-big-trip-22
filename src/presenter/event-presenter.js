@@ -29,7 +29,6 @@ export default class EventPresenter {
     this.#event = event;
     const prevEventComponent = this.#eventComponent;
     const prevEditFormComponent = this.#editFormComponent;
-
     this.#eventComponent = new EventView({
       event: this.#event,
       destination: this.#eventsModel.getDestinationById(event),
@@ -39,8 +38,7 @@ export default class EventPresenter {
     });
     this.#editFormComponent = new EditFormView({
       types: this.#eventsModel.types,
-      offers: this.#eventsModel.getOffersByType(event),
-      destination: this.#eventsModel.getDestinationById(event),
+      allOffers: this.#eventsModel.offers,
       destinations: this.#eventsModel.destinations,
       event: this.#event,
       onFormSubmit: this.#handleFormSubmit,
@@ -71,6 +69,7 @@ export default class EventPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#editFormComponent.reset(this.#event);
       this.#replaceFormToEvent();
     }
   }
@@ -78,6 +77,7 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#editFormComponent.reset(this.#event);
       this.#replaceFormToEvent();
     }
   };
@@ -99,7 +99,8 @@ export default class EventPresenter {
     this.#replaceEventToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (event) => {
+    this.#handleDataChange(event);
     this.#replaceFormToEvent();
   };
 

@@ -28,7 +28,7 @@ export default class EventsModel {
 
   getOffersById(event) {
     const currentOffers = this.#offers.find((offerItem) => event.type === offerItem.type);
-    return event.offers.map((eventOffer) => currentOffers.offers.find((offer) => eventOffer.id === offer.id));
+    return event.offers.map((eventOfferId) => currentOffers.offers.find((offer) => eventOfferId === offer.id));
   }
 
   get destinations() {
