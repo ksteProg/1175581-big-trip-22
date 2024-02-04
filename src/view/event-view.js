@@ -1,4 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import dayjs from 'dayjs';
 
 function createOfferTemplate(offer) {
   return `<li class="event__offer">
@@ -11,6 +12,10 @@ function createOfferTemplate(offer) {
 function createEventTemplate(destination, offers, event) {
   const { basePrice, dateFrom, dateTo, isFavorite, type } = event;
 
+  const timeFrom = dayjs(dateFrom).format('hh-mm');
+  const timeTo = dayjs(dateTo).format('hh-mm');
+  const timeDuration = dayjs(dateTo).diff(dayjs(dateFrom), 'hour');
+
   return (`<li class="trip-events__item">
   <div class="event">
     <time class="event__date" datetime="2019-03-18">date</time>
@@ -20,11 +25,11 @@ function createEventTemplate(destination, offers, event) {
     <h3 class="event__title">${type} ${destination.name}</h3>
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="2019-03-18T10:30">${dateFrom}</time>
+        <time class="event__start-time" datetime="2019-03-18T10:30">${timeFrom}</time>
         &mdash;
-        <time class="event__end-time" datetime="2019-03-18T11:00">${dateTo}</time>
+        <time class="event__end-time" datetime="2019-03-18T11:00">${timeTo}</time>
       </p>
-      <p class="event__duration">durationTime</p>
+      <p class="event__duration">${timeDuration}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
