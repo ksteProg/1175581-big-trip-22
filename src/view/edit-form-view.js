@@ -19,19 +19,16 @@ function createTypeItemTemplate(type) {
 </div>`;
 }
 
-function createEditFormTemplate(types, offers, allOffers, destination, destinations, state) {
-  console.log(state);
-  const { basePrice, dateFrom, dateTo, type } = state;
+function createEditFormTemplate(types, offers, allOffers, destinations, state) {
 
-  const pictures = state.destinationState ? state.destinationState.pictures : destination.pictures;
 
-  const currentDestination = state.destinationState ? state.destinationState : destination;
+  const { basePrice, dateFrom, dateTo, type, } = state;
+
+  const destination = destinations.find((dest) => state.destination === dest.id);
 
   const currentOffers = state.offersState ? state.offersState : offers;
 
   const currentType = state.typeState ? state.typeState : type;
-
-  const currentPrice = state.priceState ? state.priceState : basePrice;
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -53,7 +50,7 @@ function createEditFormTemplate(types, offers, allOffers, destination, destinati
 
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">${currentType}</label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination.name}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
         <datalist id="destination-list-1">
           ${destinations.map((dest) => `<option value="${dest.name}"></option>`).join('')}
         </datalist>
@@ -72,7 +69,7 @@ function createEditFormTemplate(types, offers, allOffers, destination, destinati
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${currentPrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -89,11 +86,11 @@ function createEditFormTemplate(types, offers, allOffers, destination, destinati
 
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${currentDestination.description}</p>
+        <p class="event__destination-description">${destination.description}</p>
 
         <div class="event__photos-container">
           <div class="event__photos-tape">
-          ${pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="Event photo">`).join('')}
+          ${destination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="Event photo">`).join('')}
           </div>
         </div>
       </section>
@@ -111,12 +108,11 @@ export default class EditFormView extends AbstractStatefulView {
   #destinations = null;
   #handleFormSubmit = null;
 
-  constructor({ types, offers, allOffers, destination, destinations, event, onFormSubmit }) {
+  constructor({ types, offers, allOffers, destinations, event, onFormSubmit }) {
     super();
     this.#types = types;
     this.#offers = offers;
     this.#allOffers = allOffers;
-    this.#destination = destination;
     this.#destinations = destinations;
     this._setState(EditFormView.parseEventToState(event));
     this.#handleFormSubmit = onFormSubmit;
@@ -150,10 +146,12 @@ export default class EditFormView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditFormTemplate(this.#types, this.#offers, this.#allOffers, this.#destination, this.#destinations, this._state);
+    return createEditFormTemplate(this.#types, this.#offers, this.#allOffers, this.#destinations, this._state);
   }
 
   reset(event) {
+    console.log('state',this._state);
+    console.log('event', event);
     this.updateElement(
       EditFormView.parseEventToState(event)
     );
@@ -179,7 +177,7 @@ export default class EditFormView extends AbstractStatefulView {
     const destinationName = evt.target.value;
     const destinationState = this.#destinations.find((destination) => destination.name === destinationName);
     this.updateElement({
-      destinationState: destinationState,
+      destination: destinationState.id,
     });
   };
 
@@ -187,8 +185,9 @@ export default class EditFormView extends AbstractStatefulView {
     evt.preventDefault();
     const typeValue = evt.target.value;
     const offersState = this.#allOffers.find((item) => item.type === typeValue).offers;
+    const offers = offersState.map((offer) => offer.id);
     this.updateElement({
-      offersState: offersState,
+      offers: offers,
       typeState: typeValue
     });
   };
@@ -197,7 +196,7 @@ export default class EditFormView extends AbstractStatefulView {
     evt.preventDefault();
     const priceValue = evt.target.value;
     this._setState({
-      priceState: priceValue
+      basePrice: priceValue
     });
   };
 

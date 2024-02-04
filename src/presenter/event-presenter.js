@@ -26,10 +26,10 @@ export default class EventPresenter {
   }
 
   init(event) {
+    console.log(event);
     this.#event = event;
     const prevEventComponent = this.#eventComponent;
     const prevEditFormComponent = this.#editFormComponent;
-
     this.#eventComponent = new EventView({
       event: this.#event,
       destination: this.#eventsModel.getDestinationById(event),
@@ -80,7 +80,6 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      console.log(this.#event);
       this.#editFormComponent.reset(this.#event);
       this.#replaceFormToEvent();
     }
