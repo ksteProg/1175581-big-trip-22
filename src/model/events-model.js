@@ -46,7 +46,7 @@ export default class EventsModel extends Observable {
     this._notify(updateType, update);
   }
 
-  addTask(updateType, update) {
+  addEvent(updateType, update) {
     this.#events = [
       update,
       ...this.#events,
@@ -55,7 +55,7 @@ export default class EventsModel extends Observable {
     this._notify(updateType, update);
   }
 
-  deleteTask(updateType, update) {
+  deleteEvent(updateType, update) {
     const index = this.#events.findIndex((task) => task.id === update.id);
 
     if (index === -1) {

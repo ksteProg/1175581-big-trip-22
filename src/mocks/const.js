@@ -5,9 +5,9 @@ const SortType = {
 };
 
 const UserAction = {
-  UPDATE_TASK: 'UPDATE_EVENT',
-  ADD_TASK: 'ADD_EVENT',
-  DELETE_TASK: 'DELETE_EVENT',
+  UPDATE_EVENT: 'UPDATE_EVENT',
+  ADD_EVENT: 'ADD_EVENT',
+  DELETE_EVENT: 'DELETE_EVENT',
 };
 
 const UpdateType = {
@@ -16,4 +16,30 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
-export {SortType, UserAction, UpdateType};
+// const Filters = [
+//   {
+//     type: 'EVERYTHING',
+//     count: 0
+//   },
+//   {
+//     type: 'FUTURE',
+//     count: 0
+//   },
+//   {
+//     type: 'PRESENT',
+//     count: 0
+//   },
+//   {
+//     type: 'PAST',
+//     count: 0
+//   },
+// ];
+
+const FilterType = {
+  EVERYTHING: 'EVERYTHING',
+  FUTURE: 'FUTURE',
+  PRESENT: 'PRESENT',
+  PAST: 'PAST',
+};
+
+export { SortType, UserAction, UpdateType, FilterType };

@@ -31,8 +31,8 @@ const EVENTS = [
   {
     id: nanoid(),
     basePrice: 878,
-    dateFrom: '2019-10-10T16:35:56.845Z',
-    dateTo: '2019-11-10T17:45:56.845Z',
+    dateFrom: '2025-10-10T16:35:56.845Z',
+    dateTo: '2026-11-10T17:45:56.845Z',
     destination: 'cfe416cq-12xa-ye10-8077-2fs9a01edcab',
     isFavorite: false,
     get offers() {

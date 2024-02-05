@@ -1,7 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import EventView from '../view/event-view.js';
 import EditFormView from '../view/edit-form-view.js';
-import {UserAction, UpdateType} from '../mocks/const.js';
+import { UserAction, UpdateType } from '../mocks/const.js';
+import { isDatesEqual } from '../mocks/utils.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -44,6 +45,7 @@ export default class EventPresenter {
       allOffers: this.offers,
       destinations: this.destinations,
       event: this.#event,
+      onDeleteClick: this.#handleDeleteClick,
       onFormSubmit: this.#handleFormSubmit,
     });
 
@@ -102,20 +104,33 @@ export default class EventPresenter {
     this.#replaceEventToForm();
   };
 
-  #handleFormSubmit = (event) => {
+  #handleFormSubmit = (update) => {
+
+    const isMinorUpdate =
+      !isDatesEqual(this.#event.dateFrom, update.dueDateFrom) ||
+      !isDatesEqual(this.#event.dateTo, update.To);
+
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       UpdateType.MINOR,
-      event,
+      update,
     );
     this.#replaceFormToEvent();
   };
 
   #handleFavoriteClick = () => {
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_EVENT,
       UpdateType.MINOR,
-      {...this.#event, isFavorite: !this.#event.isFavorite},
+      { ...this.#event, isFavorite: !this.#event.isFavorite },
+    );
+  };
+
+  #handleDeleteClick = (event) => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event,
     );
   };
 }

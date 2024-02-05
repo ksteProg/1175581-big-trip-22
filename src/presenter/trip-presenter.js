@@ -1,45 +1,49 @@
 import TripInfoView from '../view/trip-info-view.js';
-import FilterView from '../view/filter-view.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventPresenter from './event-presenter.js';
 import NoEventsView from '../view/no-events-view.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
-import { sortByTime, sortByPrice } from '../mocks/utils.js';
-import { SortType, UpdateType, UserAction } from '../mocks/const.js';
+import { sortByTime, sortByPrice, filter } from '../mocks/utils.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../mocks/const.js';
 
 export default class TripPresenter {
   #eventsListComponent = new EventsListView();
   #tripElement = null;
-  #filtersElement = null;
   #eventsElement = null;
   #eventsModel = null;
+  #filterModel = null;
   #sortComponent = null;
-  #noEventsComponent = new NoEventsView();
-  #filterComponent = new FilterView();
+  #noEventsComponent = null;
+
   #tripInfoComponent = new TripInfoView();
   #eventPresenters = new Map();
 
   #currentSortType = SortType.DEFAULT;
+  #filterType = FilterType.EVERYTING;
 
-  constructor({ tripElement, eventsElement, filtersElement, eventsModel }) {
+  constructor({ tripElement, eventsElement, eventsModel, filterModel }) {
     this.#tripElement = tripElement;
-    this.#filtersElement = filtersElement;
     this.#eventsElement = eventsElement;
     this.#eventsModel = eventsModel;
+    this.#filterModel = filterModel;
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
+    const events = this.#eventsModel.events;
+    this.#filterType = this.#filterModel.filter;
+    const filteredEvents = filter[this.#filterType](events);
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return [...this.#eventsModel.events].sort(sortByTime);
+        return filteredEvents.sort(sortByTime);
       case SortType.PRICE:
-        return [...this.#eventsModel.events].sort(sortByPrice);
+        return filteredEvents.sort(sortByPrice);
     }
 
-    return this.#eventsModel.events;
+    return filteredEvents;
   }
 
   get offers() {
@@ -61,13 +65,13 @@ export default class TripPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#eventsModel.updateTask(updateType, update);
+        this.#eventsModel.updateEvent(updateType, update);
         break;
       case UserAction.ADD_EVENT:
-        this.#eventsModel.addTask(updateType, update);
+        this.#eventsModel.addEvent(updateType, update);
         break;
       case UserAction.DELETE_EVENT:
-        this.#eventsModel.deleteTask(updateType, update);
+        this.#eventsModel.deleteEvent(updateType, update);
         break;
     }
   };
@@ -120,6 +124,10 @@ export default class TripPresenter {
     remove(this.#sortComponent);
     remove(this.#noEventsComponent);
 
+    if (this.#noEventsComponent) {
+      remove(this.#noEventsComponent);
+    }
+
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
@@ -129,12 +137,11 @@ export default class TripPresenter {
     render(this.#tripInfoComponent, this.#tripElement, RenderPosition.AFTERBEGIN);
   }
 
-  #renderFilter() {
-    render(this.#filterComponent, this.#filtersElement, RenderPosition.AFTERBEGIN);
-  }
-
   #renderNoEvent() {
-    render(this.#noEventsComponent, this.#eventsElement.element, RenderPosition.AFTERBEGIN);
+    this.#noEventsComponent = new NoEventsView({
+      filterType: this.#filterType
+    });
+    render(this.#noEventsComponent, this.#eventsElement, RenderPosition.AFTEREND);
   }
 
   #renderEvent(event) {
@@ -164,9 +171,7 @@ export default class TripPresenter {
 
   #renderBoard() {
     this.#renderTripInfo();
-    this.#renderFilter();
     this.#renderSort();
-
     render(this.#eventsListComponent, this.#eventsElement);
 
     if (this.events.length === 0) {
