@@ -1,5 +1,4 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -106,17 +105,21 @@ export default class EditFormView extends AbstractStatefulView {
   #destination = null;
   #destinations = null;
   #handleFormSubmit = null;
+  #handleDeleteClick = null;
 
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({ types, allOffers, destinations, event, onFormSubmit }) {
+  constructor({ types, allOffers, destinations, event, onFormSubmit, onDeleteClick }) {
     super();
     this.#types = types;
     this.#allOffers = allOffers;
     this.#destinations = destinations;
     this._setState(EditFormView.parseEventToState(event));
+
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleDeleteClick = onDeleteClick;
+
     this._restoreHandlers();
   }
 
@@ -223,8 +226,15 @@ export default class EditFormView extends AbstractStatefulView {
       .addEventListener('input', this.#priceChangeHandler);
     this.element.querySelectorAll('.event__type-input').forEach((typeInput) => typeInput.addEventListener('click', this.#typeChangeHandler));
     this.#setDatepicker();
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
 
   }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditFormView.parseStateToEvent(this._state));
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();

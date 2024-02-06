@@ -9,8 +9,11 @@ function createOfferTemplate(offer) {
 </li>`;
 }
 
-function createEventTemplate(destination, offers, event) {
+function createEventTemplate(destinations, allOffers, event) {
   const { basePrice, dateFrom, dateTo, isFavorite, type } = event;
+
+  const destination = destinations.find((dest) => event.destination === dest.id);
+  const offers = allOffers.find((item) => item.type === type).offers;
 
   const timeFrom = dayjs(dateFrom).format('hh-mm');
   const timeTo = dayjs(dateTo).format('hh-mm');
@@ -53,16 +56,16 @@ function createEventTemplate(destination, offers, event) {
 }
 
 export default class EventView extends AbstractStatefulView {
-  #destination = null;
-  #offers = null;
+  #destinations = null;
+  #allOffers = null;
   #event = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({ destination, offers, event, onEditClick, onFavoriteClick }) {
+  constructor({ destinations, allOffers, event, onEditClick, onFavoriteClick }) {
     super();
-    this.#destination = destination;
-    this.#offers = offers;
+    this.#destinations = destinations;
+    this.#allOffers = allOffers;
     this.#event = event;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
@@ -74,7 +77,7 @@ export default class EventView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEventTemplate(this.#destination, this.#offers, this.#event);
+    return createEventTemplate(this.#destinations, this.#allOffers, this.#event);
   }
 
 

@@ -1,6 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import EventView from '../view/event-view.js';
 import EditFormView from '../view/edit-form-view.js';
+import { UserAction, UpdateType } from '../mocks/const.js';
+import { isDatesEqual } from '../mocks/utils.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -18,9 +20,11 @@ export default class EventPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor({ eventListContainer, eventsModel, onDataChange, onModeChange }) {
+  constructor({ eventListContainer, destinations, types, offers, onDataChange, onModeChange }) {
     this.#eventListContainer = eventListContainer;
-    this.#eventsModel = eventsModel;
+    this.destinations = destinations;
+    this.types = types;
+    this.offers = offers;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
   }
@@ -31,16 +35,17 @@ export default class EventPresenter {
     const prevEditFormComponent = this.#editFormComponent;
     this.#eventComponent = new EventView({
       event: this.#event,
-      destination: this.#eventsModel.getDestinationById(event),
-      offers: this.#eventsModel.getOffersById(event),
+      destinations: this.destinations,
+      allOffers: this.offers,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
     this.#editFormComponent = new EditFormView({
-      types: this.#eventsModel.types,
-      allOffers: this.#eventsModel.offers,
-      destinations: this.#eventsModel.destinations,
+      types: this.types,
+      allOffers: this.offers,
+      destinations: this.destinations,
       event: this.#event,
+      onDeleteClick: this.#handleDeleteClick,
       onFormSubmit: this.#handleFormSubmit,
     });
 
@@ -99,12 +104,33 @@ export default class EventPresenter {
     this.#replaceEventToForm();
   };
 
-  #handleFormSubmit = (event) => {
-    this.#handleDataChange(event);
+  #handleFormSubmit = (update) => {
+
+    const isMinorUpdate =
+      !isDatesEqual(this.#event.dateFrom, update.dueDateFrom) ||
+      !isDatesEqual(this.#event.dateTo, update.To);
+
+    this.#handleDataChange(
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      UpdateType.MINOR,
+      update,
+    );
     this.#replaceFormToEvent();
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      { ...this.#event, isFavorite: !this.#event.isFavorite },
+    );
+  };
+
+  #handleDeleteClick = (event) => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
   };
 }

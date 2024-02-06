@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { FilterType } from './const';
 
 const getRandomArrayElement = (array) => array[Math.floor(Math.random() * (array.length - 1))];
 
@@ -9,9 +10,6 @@ const getMultipleRandom = (arr) => {
 
   return shuffled.slice(0, Math.floor(Math.random() * shuffled.length));
 };
-
-const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
-
 
 function sortByTime(eventA, eventB) {
   return getEventDuration(eventB) - getEventDuration(eventA);
@@ -25,4 +23,16 @@ function getEventDuration(event) {
   return dayjs(event.dateTo).diff(dayjs(event.dateFrom));
 }
 
-export { getRandomArrayElement, getRandomNumber, getMultipleRandom, updateItem, sortByTime, sortByPrice};
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
+
+export const filter = {
+  [FilterType.EVERYTHING]: (events) => events,
+  [FilterType.PAST]: (events) => events.filter((event) => new Date(event.dateTo) < new Date()),
+  [FilterType.PRESENT]: (events) => events.filter((event) => new Date(event.dateFrom) <= new Date() && new Date(event.dateTo) >= new Date()),
+  [FilterType.FUTURE]: (events) => events.filter((event) => new Date(event.dateFrom) > new Date()),
+};
+
+export { getRandomArrayElement, getRandomNumber, getMultipleRandom, sortByTime, sortByPrice, isDatesEqual};
