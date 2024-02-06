@@ -4,6 +4,7 @@ import EventsListView from '../view/events-list-view.js';
 import EventPresenter from './event-presenter.js';
 import NewEventPresenter from './new-event-presenter.js';
 import NoEventsView from '../view/no-events-view.js';
+import LoadingView from '../view/loading-view.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
 import { sortByTime, sortByPrice, filter } from '../mocks/utils.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../mocks/const.js';
@@ -16,6 +17,8 @@ export default class TripPresenter {
   #filterModel = null;
   #sortComponent = null;
   #noEventsComponent = null;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
 
   #tripInfoComponent = new TripInfoView();
   #eventPresenters = new Map();
@@ -23,7 +26,7 @@ export default class TripPresenter {
   #newEventPresenter = null;
 
   #currentSortType = SortType.DEFAULT;
-  #filterType = FilterType.EVERYTING;
+  #filterType = FilterType.EVERYTHING;
 
   constructor({ tripElement, eventsElement, eventsModel, filterModel, onNewTaskDestroy }) {
     this.#tripElement = tripElement;
@@ -32,7 +35,10 @@ export default class TripPresenter {
     this.#filterModel = filterModel;
 
     this.#newEventPresenter = new NewEventPresenter({
-      taskListContainer: this.#eventsListComponent.element,
+      destinations: this.destinations,
+      types: this.types,
+      offers: this.offers,
+      eventListContainer: this.#eventsListComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewTaskDestroy
     });
@@ -102,7 +108,13 @@ export default class TripPresenter {
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        this.#clearBoard({resetRenderedTaskCount: true, resetSortType: true});
+        this.#clearBoard({ resetRenderedTaskCount: true, resetSortType: true });
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#clearBoard();
         this.#renderBoard();
         break;
     }
@@ -119,9 +131,13 @@ export default class TripPresenter {
     }
 
     this.#currentSortType = sortType;
-    this.#clearBoard({resetRenderedTaskCount: true});
+    this.#clearBoard({ resetRenderedTaskCount: true });
     this.#renderBoard();
   };
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#eventsElement, RenderPosition.AFTERBEGIN);
+  }
 
   #renderSort() {
     this.#sortComponent = new SortView({
@@ -131,7 +147,7 @@ export default class TripPresenter {
     render(this.#sortComponent, this.#eventsElement, RenderPosition.AFTERBEGIN);
   }
 
-  #clearBoard({ resetSortType = false} = {}) {
+  #clearBoard({ resetSortType = false } = {}) {
     this.#newEventPresenter.destroy();
 
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
@@ -139,6 +155,7 @@ export default class TripPresenter {
 
     remove(this.#sortComponent);
     remove(this.#noEventsComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noEventsComponent) {
       remove(this.#noEventsComponent);
@@ -189,6 +206,11 @@ export default class TripPresenter {
     this.#renderTripInfo();
     this.#renderSort();
     render(this.#eventsListComponent, this.#eventsElement);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     if (this.events.length === 0) {
       this.#renderNoEvent();

@@ -1,5 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import { DEFAULT_EVENT } from '../mocks/const.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
 
 function createOfferTemplate(offer) {
@@ -21,12 +23,29 @@ function createTypeItemTemplate(type) {
 </div>`;
 }
 
+function createSubmitButtonTemplate(type) {
+  const typeName = type[0].toUpperCase() + type.substring(1);
+  return `<div class="event__type-item">
+  <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
+  <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${typeName}</label>
+</div>`;
+}
+
+
 function createEditFormTemplate(types, allOffers, destinations, state) {
+
   const { basePrice, dateFrom, dateTo, type, } = state;
 
   const destination = destinations.find((dest) => state.destination === dest.id);
 
   const offers = allOffers.find((item) => item.type === state.type).offers;
+
+  // console.log('destination', destination.pictures);
+  // console.log('offers', offers);
+  // console.log('types', types);
+  // console.log('allOffers', allOffers);
+  // console.log('destinations', destinations);
+  // console.log('state', state);
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -48,9 +67,9 @@ function createEditFormTemplate(types, allOffers, destinations, state) {
 
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">${type}</label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${state.destination === '' ? '' : destination.name }" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${destinations.map((dest) => `<option value="${dest.name}"></option>`).join('')}
+          ${destinations.map((dest) => `<option value="${he.encode(dest.name)}"></option>`).join('')}
         </datalist>
       </div>
 
@@ -69,26 +88,25 @@ function createEditFormTemplate(types, allOffers, destinations, state) {
         </label>
         <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
       </div>
-
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>
+      ${state.id === 'new' ? '<button class="event__reset-btn" type="reset">Cancel</button>' : '<button class="event__reset-btn" type="reset">Delete</button>'}
     </header>
     <section class="event__details">
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-      ${offers.map((offer) => createOfferTemplate(offer)).join('')}
+      ${state.offers === 'new' ? '' : offers.map((offer) => createOfferTemplate(offer)).join('')}
         </div>
       </section>
 
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${destination.description}</p>
+        <p class="event__destination-description">${state.destination === '' ? '' : destination.description }</p>
 
         <div class="event__photos-container">
           <div class="event__photos-tape">
-          ${destination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="Event photo">`).join('')}
+          ${state.destination === '' ? '' : destination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="Event photo">`).join('')}
           </div>
         </div>
       </section>
@@ -110,7 +128,7 @@ export default class EditFormView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({ types, allOffers, destinations, event, onFormSubmit, onDeleteClick }) {
+  constructor({ types, allOffers, destinations, event = DEFAULT_EVENT, onFormSubmit, onDeleteClick }) {
     super();
     this.#types = types;
     this.#allOffers = allOffers;
