@@ -14,6 +14,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 // const Filters = [
@@ -42,4 +43,15 @@ const FilterType = {
   PAST: 'PAST',
 };
 
-export { SortType, UserAction, UpdateType, FilterType };
+const DEFAULT_EVENT = {
+  id: 'new',
+  basePrice: 0,
+  dateFrom: '',
+  dateTo: '',
+  destination: '',
+  isFavorite: false,
+  offers: [],
+  type: 'flight',
+};
+
+export { SortType, UserAction, UpdateType, FilterType, DEFAULT_EVENT };

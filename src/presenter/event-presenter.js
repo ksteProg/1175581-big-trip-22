@@ -105,14 +105,13 @@ export default class EventPresenter {
   };
 
   #handleFormSubmit = (update) => {
-
     const isMinorUpdate =
       !isDatesEqual(this.#event.dateFrom, update.dueDateFrom) ||
       !isDatesEqual(this.#event.dateTo, update.To);
 
     this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      UpdateType.MINOR,
       update,
     );
     this.#replaceFormToEvent();

@@ -7,13 +7,19 @@ export default class NewEventPresenter {
   #eventListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
+  #destinations = null;
+  #types = null;
+  offers = null;
 
   #editFormComponent = null;
 
-  constructor({eventListContainer, onDataChange, onDestroy}) {
+  constructor({eventListContainer, destinations, types, offers, onDataChange, onDestroy}) {
     this.#eventListContainer = eventListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
+    this.destinations = destinations;
+    this.types = types;
+    this.offers = offers;
   }
 
   init() {
@@ -22,6 +28,9 @@ export default class NewEventPresenter {
     }
 
     this.#editFormComponent = new EditFormView({
+      types: this.types,
+      allOffers: this.offers,
+      destinations: this.destinations,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick
     });
@@ -46,9 +55,9 @@ export default class NewEventPresenter {
 
   #handleFormSubmit = (event) => {
     this.#handleDataChange(
-      UserAction.ADD_TASK,
+      UserAction.ADD_EVENT,
       UpdateType.MINOR,
-      {id: nanoid(), ...event},
+      {...event, id: nanoid()},
     );
     this.destroy();
   };
