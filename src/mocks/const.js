@@ -40,4 +40,9 @@ const TIME_LIMIT = {
   UPPER_LIMIT: 1000,
 };
 
+export const EVENT_COUNT = 10;
+export const MS_IN_MIN = 60000;
+export const MIN_IN_HOUR = 60;
+export const MIN_IN_DAY = 1440;
+
 export { SortType, UserAction, UpdateType, FilterType, DEFAULT_EVENT, TIME_LIMIT };

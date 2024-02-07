@@ -4,13 +4,13 @@ import flatpickr from 'flatpickr';
 import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createOfferTemplate(offer) {
+function createOfferTemplate(offerByType, offers) {
   return `<div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
-  <label class="event__offer-label" for="event-offer-meal-1">
-    <span class="event__offer-title">${offer.title}</span>
+  <input class="event__offer-checkbox  visually-hidden" id="${offerByType.id}" type="checkbox" name="${offerByType.title}" ${offers.some((offer) => offerByType.id === offer) ? 'checked' : ''}>
+  <label class="event__offer-label" for="${offerByType.id}">
+    <span class="event__offer-title">${offerByType.title}</span>
     &plus;&euro;&nbsp;
-    <span class="event__offer-price">${offer.price}</span>
+    <span class="event__offer-price">${offerByType.price}</span>
   </label>
 </div>`;
 }
@@ -25,11 +25,12 @@ function createTypeItemTemplate(type) {
 
 function createEditFormTemplate(types, allOffers, destinations, state) {
 
-  const { basePrice, dateFrom, dateTo, type, isDisabled, isDeleting, isSaving} = state;
+  const { basePrice, dateFrom, dateTo, type, offers, isDisabled, isDeleting, isSaving } = state;
 
   const destination = destinations.find((dest) => state.destination === dest.id);
 
-  const offers = allOffers.find((item) => item.type === state.type).offers;
+  const offersByType = allOffers.find((item) => item.type === state.type).offers;
+
 
 
   return `<li class="trip-events__item">
@@ -81,7 +82,7 @@ function createEditFormTemplate(types, allOffers, destinations, state) {
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-      ${state.offers === '' ? '' : offers.map((offer) => createOfferTemplate(offer)).join('')}
+      ${offersByType.map((offerByType) => createOfferTemplate(offerByType, offers)).join('')}
         </div>
       </section>
 
@@ -186,6 +187,7 @@ export default class EditFormView extends AbstractStatefulView {
   }
 
   static parseEventToState(event) {
+    ;
     return {
       ...event,
       isDisabled: false,
@@ -219,10 +221,13 @@ export default class EditFormView extends AbstractStatefulView {
       .addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__input--price')
       .addEventListener('input', this.#priceChangeHandler);
-    this.element.querySelectorAll('.event__type-input').forEach((typeInput) => typeInput.addEventListener('click', this.#typeChangeHandler));
+    this.element.querySelectorAll('.event__type-input').forEach((typeInput) => typeInput
+      .addEventListener('click', this.#typeChangeHandler));
     this.#setDatepicker();
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#formDeleteClickHandler);
+    this.element.querySelectorAll('.event__offer-checkbox').forEach((offerCheckbox) => offerCheckbox
+      .addEventListener('click', this.#offersChangeHandler));
 
   }
 
@@ -248,10 +253,7 @@ export default class EditFormView extends AbstractStatefulView {
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
     const typeValue = evt.target.value;
-    const offersState = this.#allOffers.find((item) => item.type === typeValue).offers;
-    const offers = offersState.map((offer) => offer.id);
     this.updateElement({
-      offers: offers,
       type: typeValue
     });
   };
@@ -262,6 +264,21 @@ export default class EditFormView extends AbstractStatefulView {
     this._setState({
       basePrice: Number(priceValue)
     });
+  };
+
+  #offersChangeHandler = (evt) => {
+
+    const offerId = evt.target.id;
+    if (!this._state.offers.includes(offerId)) {
+      const offersByType = this.#allOffers.find((item) => item.type === this._state.type).offers;
+      const offerByType = offersByType.find((item) => item.id === offerId);
+      this._setState({
+        offers: [...this._state.offers, offerId],
+        basePrice: this._state.basePrice + offerByType.price
+      });
+    } else {
+      this._state.offers = [...this._state.offers.filter((offer) => offer !== offerId)];
+    }
   };
 
 }

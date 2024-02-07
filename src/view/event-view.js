@@ -1,27 +1,30 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import { getDurationTime } from '../mocks/utils.js';
 import dayjs from 'dayjs';
 
-function createOfferTemplate(offer) {
+function createOfferTemplate(offersByType, offer) {
+
   return `<li class="event__offer">
-  <span class="event__offer-title">${offer.title}</span>
+  <span class="event__offer-title">${offersByType.find((offerByType) => offerByType.id === offer).title}</span>
   &plus;&euro;&nbsp;
-  <span class="event__offer-price">${offer.price}</span>
+  <span class="event__offer-price">${offersByType.find((offerByType) => offerByType.id === offer).price}</span>
 </li>`;
 }
 
 function createEventTemplate(destinations, allOffers, event) {
-  const { basePrice, dateFrom, dateTo, isFavorite, type } = event;
 
+  const { basePrice, dateFrom, dateTo, isFavorite, type, offers } = event;
   const destination = destinations.find((dest) => event.destination === dest.id);
-  const offers = allOffers.find((item) => item.type === type).offers;
+  const offersByType = allOffers.find((item) => item.type === type).offers;
 
-  const timeFrom = dayjs(dateFrom).format('hh-mm');
-  const timeTo = dayjs(dateTo).format('hh-mm');
-  const timeDuration = dayjs(dateTo).diff(dayjs(dateFrom), 'hour');
+
+  const timeFrom = dayjs(dateFrom).format('hh:mm');
+  const timeTo = dayjs(dateTo).format('hh:mm');
+
 
   return (`<li class="trip-events__item">
   <div class="event">
-    <time class="event__date" datetime="2019-03-18">date</time>
+    <time class="event__date" datetime="${dayjs(dateFrom).format('YYYY-MM-DD')}">${dayjs(dateFrom).format('MMM D')}</time>
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
     </div>
@@ -32,14 +35,14 @@ function createEventTemplate(destinations, allOffers, event) {
         &mdash;
         <time class="event__end-time" datetime="2019-03-18T11:00">${timeTo}</time>
       </p>
-      <p class="event__duration">${timeDuration}</p>
+      <p class="event__duration">${getDurationTime(dateFrom, dateTo)}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
     </p>
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-      ${offers.map((offer) => createOfferTemplate(offer)).join('')}
+      ${offers.map((offer) => createOfferTemplate(offersByType, offer)).join('')}
     </ul>
     <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
       <span class="visually-hidden">Add to favorite</span>

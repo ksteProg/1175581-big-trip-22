@@ -40,7 +40,6 @@ export default class NewEventPresenter {
   }
 
   setSaving() {
-    console.log(this);
     this.#editFormComponent.updateElement({
       isDisabled: true,
       isSaving: true,
@@ -48,7 +47,6 @@ export default class NewEventPresenter {
   }
 
   setAborting() {
-    console.log(this);
     const resetFormState = () => {
       this.#editFormComponent.updateElement({
         isDisabled: false,
@@ -74,7 +72,6 @@ export default class NewEventPresenter {
   }
 
   #handleFormSubmit = (event) => {
-    console.log(event);
     delete event.id;
     this.#handleDataChange(
       UserAction.ADD_EVENT,
