@@ -105,7 +105,6 @@ export default class TripPresenter {
         break;
       case UserAction.ADD_EVENT:
         this.#newEventPresenter.setSaving();
-        console.log(this.#newEventPresenter);
         try {
           await this.#eventsModel.addEvent(updateType, update);
         } catch (err) {

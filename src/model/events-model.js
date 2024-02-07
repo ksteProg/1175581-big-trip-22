@@ -1,6 +1,5 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../mocks/const.js';
-import { getRandomArrayElement } from '../mocks/utils.js';
 
 export default class EventsModel extends Observable {
   #events = [];
