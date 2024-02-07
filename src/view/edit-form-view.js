@@ -31,8 +31,6 @@ function createEditFormTemplate(types, allOffers, destinations, state) {
 
   const offersByType = allOffers.find((item) => item.type === state.type).offers;
 
-
-
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -187,7 +185,6 @@ export default class EditFormView extends AbstractStatefulView {
   }
 
   static parseEventToState(event) {
-    ;
     return {
       ...event,
       isDisabled: false,
