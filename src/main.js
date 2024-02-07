@@ -19,7 +19,7 @@ const eventsModel = new EventsModel({
   eventsApiService: new EventsApiService(END_POINT, AUTHORIZATION)
 });
 
-const tripPresenter = new TripPresenter({ tripElement, eventsElement, eventsModel, filterModel, onNewTaskDestroy: handleNewEventFormClose });
+const tripPresenter = new TripPresenter({ tripElement, eventsElement, eventsModel, filterModel, onNewEventDestroy: handleNewEventFormClose });
 
 const filterPresenter = new FilterPresenter({
   filterContainer: filtersElement,
@@ -28,14 +28,14 @@ const filterPresenter = new FilterPresenter({
 });
 
 const newEventButtonComponent = new NewEventButtonView({
-  onClick: handleNewTaskButtonClick
+  onClick: handleNewEventButtonClick
 });
 
 function handleNewEventFormClose() {
   newEventButtonComponent.element.disabled = false;
 }
 
-function handleNewTaskButtonClick() {
+function handleNewEventButtonClick() {
   tripPresenter.createEvent();
   newEventButtonComponent.element.disabled = true;
 }

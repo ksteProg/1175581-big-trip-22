@@ -1,7 +1,6 @@
-import {remove, render, RenderPosition} from '../framework/render.js';
+import { remove, render, RenderPosition } from '../framework/render.js';
 import EditFormView from '../view/edit-form-view.js';
-import {nanoid} from 'nanoid';
-import {UserAction, UpdateType} from '../mocks/const.js';
+import { UserAction, UpdateType } from '../mocks/const.js';
 
 export default class NewEventPresenter {
   #eventListContainer = null;
@@ -9,17 +8,17 @@ export default class NewEventPresenter {
   #handleDestroy = null;
   #destinations = null;
   #types = null;
-  offers = null;
-
+  #offers = null;
   #editFormComponent = null;
 
-  constructor({eventListContainer, destinations, types, offers, onDataChange, onDestroy}) {
+  constructor({ eventListContainer, destinations, types, offers, onDataChange, onDestroy }) {
     this.#eventListContainer = eventListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
-    this.destinations = destinations;
-    this.types = types;
-    this.offers = offers;
+    this.#destinations = destinations;
+    this.#types = types;
+    this.#offers = offers;
+
   }
 
   init() {
@@ -28,9 +27,9 @@ export default class NewEventPresenter {
     }
 
     this.#editFormComponent = new EditFormView({
-      types: this.types,
-      allOffers: this.offers,
-      destinations: this.destinations,
+      types: this.#types,
+      allOffers: this.#offers,
+      destinations: this.#destinations,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick
     });
@@ -38,6 +37,27 @@ export default class NewEventPresenter {
     render(this.#editFormComponent, this.#eventListContainer, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  setSaving() {
+    console.log(this);
+    this.#editFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    console.log(this);
+    const resetFormState = () => {
+      this.#editFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editFormComponent.shake(resetFormState);
   }
 
   destroy() {
@@ -54,12 +74,13 @@ export default class NewEventPresenter {
   }
 
   #handleFormSubmit = (event) => {
+    console.log(event);
+    delete event.id;
     this.#handleDataChange(
       UserAction.ADD_EVENT,
       UpdateType.MINOR,
-      {...event, id: nanoid()},
+      event,
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {

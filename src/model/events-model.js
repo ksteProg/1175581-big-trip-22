@@ -1,13 +1,11 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../mocks/const.js';
-import { EVENTS } from '../mocks/events.js';
 import { getRandomArrayElement } from '../mocks/utils.js';
 
 export default class EventsModel extends Observable {
   #events = [];
   #offers = [];
   #destinations = [];
-  #event = getRandomArrayElement(EVENTS);
   #eventsApiService = null;
 
   constructor({ eventsApiService }) {
@@ -40,24 +38,16 @@ export default class EventsModel extends Observable {
     return this.#offers;
   }
 
-  get types() {
-    return this.#offers.map((item) => item.type);
-  }
-
   get destinations() {
     return this.#destinations;
   }
 
-  get event() {
-    return this.#event;
-  }
 
   async updateEvent(updateType, update) {
     const index = this.#events.findIndex((event) => event.id === update.id);
     if (index === -1) {
       throw new Error('Can\'t update unexisting event');
     }
-
     try {
       const response = await this.#eventsApiService.updateEvent(update);
       const updatedEvent = this.#adaptToClient(response);
@@ -73,26 +63,38 @@ export default class EventsModel extends Observable {
 
   }
 
-  addEvent(updateType, update) {
-    this.#events = [
-      update,
-      ...this.#events,
-    ];
+  async addEvent(updateType, update) {
+    try {
+      const response = await this.#eventsApiService.addEvent(update);
+      const newEvent = this.#adaptToClient(response);
+      this.#events = [
+        newEvent,
+        ...this.#events,
+      ];
+      this._notify(updateType, update);
+    } catch (err) {
+      throw new Error('Can\'t add event');
+    }
 
-    this._notify(updateType, update);
   }
 
-  deleteEvent(updateType, update) {
+  async deleteEvent(updateType, update) {
     const index = this.#events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting event');
     }
 
-    this.#events = [
-      ...this.#events.slice(0, index),
-      ...this.#events.slice(index + 1),
-    ];
+    try {
+      await this.#eventsApiService.deleteEvent(update);
+      this.#events = [
+        ...this.#events.slice(0, index),
+        ...this.#events.slice(index + 1),
+      ];
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can\'t delete event');
+    }
 
     this._notify(updateType);
   }
