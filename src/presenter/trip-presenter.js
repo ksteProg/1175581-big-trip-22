@@ -7,7 +7,8 @@ import NoEventsView from '../view/no-events-view.js';
 import LoadingView from '../view/loading-view.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
 import { sortByTime, sortByPrice, filter } from '../mocks/utils.js';
-import { SortType, UpdateType, UserAction, FilterType } from '../mocks/const.js';
+import { SortType, UpdateType, UserAction, FilterType, TIME_LIMIT } from '../mocks/const.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 export default class TripPresenter {
   #eventsListComponent = new EventsListView();
@@ -19,32 +20,26 @@ export default class TripPresenter {
   #noEventsComponent = null;
   #loadingComponent = new LoadingView();
   #isLoading = true;
-
   #tripInfoComponent = new TripInfoView();
   #eventPresenters = new Map();
-
   #newEventPresenter = null;
-
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
+  #onNewEventDestroy = null;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TIME_LIMIT.LOWER_LIMIT,
+    upperLimit: TIME_LIMIT.UPPER_LIMIT
+  });
 
-  constructor({ tripElement, eventsElement, eventsModel, filterModel, onNewTaskDestroy }) {
+  constructor({ tripElement, eventsElement, eventsModel, filterModel, onNewEventDestroy }) {
     this.#tripElement = tripElement;
     this.#eventsElement = eventsElement;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
-
-    this.#newEventPresenter = new NewEventPresenter({
-      destinations: this.destinations,
-      types: this.types,
-      offers: this.offers,
-      eventListContainer: this.#eventsListComponent.element,
-      onDataChange: this.#handleViewAction,
-      onDestroy: onNewTaskDestroy
-    });
-
+    this.#onNewEventDestroy = onNewEventDestroy;
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+
   }
 
   get events() {
@@ -57,6 +52,7 @@ export default class TripPresenter {
       case SortType.PRICE:
         return filteredEvents.sort(sortByPrice);
     }
+
 
     return filteredEvents;
   }
@@ -80,21 +76,52 @@ export default class TripPresenter {
   createEvent() {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.createNewEventPresenter();
     this.#newEventPresenter.init();
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  createNewEventPresenter() {
+    this.#newEventPresenter = new NewEventPresenter({
+      destinations: this.destinations,
+      types: this.types,
+      offers: this.offers,
+      eventListContainer: this.#eventsListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: this.#onNewEventDestroy
+    });
+  }
+
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#eventsModel.updateEvent(updateType, update);
+        this.#eventPresenters.get(update.id).setSaving();
+        try {
+          await this.#eventsModel.updateEvent(updateType, update);
+        } catch (err) {
+          this.#eventPresenters.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_EVENT:
-        this.#eventsModel.addEvent(updateType, update);
+        this.#newEventPresenter.setSaving();
+        console.log(this.#newEventPresenter);
+        try {
+          await this.#eventsModel.addEvent(updateType, update);
+        } catch (err) {
+          this.#newEventPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_EVENT:
-        this.#eventsModel.deleteEvent(updateType, update);
+        this.#eventPresenters.get(update.id).setDeleting();
+        try {
+          await this.#eventsModel.deleteEvent(updateType, update);
+        } catch (err) {
+          this.#eventPresenters.get(update.id).setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -121,7 +148,9 @@ export default class TripPresenter {
   };
 
   #handleModeChange = () => {
-    this.#newEventPresenter.destroy();
+    if (this.#newEventPresenter) {
+      this.#newEventPresenter.destroy();
+    }
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -148,7 +177,9 @@ export default class TripPresenter {
   }
 
   #clearBoard({ resetSortType = false } = {}) {
-    this.#newEventPresenter.destroy();
+    if (this.#newEventPresenter !== null) {
+      this.#newEventPresenter.destroy();
+    }
 
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
@@ -217,6 +248,5 @@ export default class TripPresenter {
     } else {
       this.#renderEvents();
     }
-
   }
 }

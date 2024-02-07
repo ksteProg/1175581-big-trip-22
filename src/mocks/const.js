@@ -17,25 +17,6 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
-// const Filters = [
-//   {
-//     type: 'EVERYTHING',
-//     count: 0
-//   },
-//   {
-//     type: 'FUTURE',
-//     count: 0
-//   },
-//   {
-//     type: 'PRESENT',
-//     count: 0
-//   },
-//   {
-//     type: 'PAST',
-//     count: 0
-//   },
-// ];
-
 const FilterType = {
   EVERYTHING: 'EVERYTHING',
   FUTURE: 'FUTURE',
@@ -44,7 +25,7 @@ const FilterType = {
 };
 
 const DEFAULT_EVENT = {
-  id: 'new',
+  id: '',
   basePrice: 0,
   dateFrom: '',
   dateTo: '',
@@ -54,4 +35,14 @@ const DEFAULT_EVENT = {
   type: 'flight',
 };
 
-export { SortType, UserAction, UpdateType, FilterType, DEFAULT_EVENT };
+const TIME_LIMIT = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+export const EVENT_COUNT = 10;
+export const MS_IN_MIN = 60000;
+export const MIN_IN_HOUR = 60;
+export const MIN_IN_DAY = 1440;
+
+export { SortType, UserAction, UpdateType, FilterType, DEFAULT_EVENT, TIME_LIMIT };
