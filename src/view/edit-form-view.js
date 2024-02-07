@@ -206,22 +206,6 @@ export default class EditFormView extends AbstractStatefulView {
 
   static parseStateToEvent(state) {
     const event = { ...state };
-    // if (!event.destinationState) {
-    //   event.destinationState = null;
-    // }
-    // if (!event.offersState) {
-    //   event.offersState = null;
-    // }
-    // if (!event.priceState) {
-    //   event.priceState = null;
-    // }
-    // if (!event.typeState) {
-    //   event.typeState = null;
-    // }
-    // delete event.destinationState;
-    // delete event.offersState;
-    // delete event.priceState;
-    // delete event.typeState;
     return event;
   }
 

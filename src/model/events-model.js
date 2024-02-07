@@ -1,18 +1,16 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../mocks/const.js';
 import { EVENTS } from '../mocks/events.js';
-import { OFFERS } from '../mocks/offers.js';
-import { DESTINATIONS } from '../mocks/destinations.js';
 import { getRandomArrayElement } from '../mocks/utils.js';
 
 export default class EventsModel extends Observable {
   #events = [];
-  #offers = OFFERS;
-  #destinations = DESTINATIONS;
+  #offers = [];
+  #destinations = [];
   #event = getRandomArrayElement(EVENTS);
   #eventsApiService = null;
 
-  constructor({eventsApiService}) {
+  constructor({ eventsApiService }) {
     super();
     this.#eventsApiService = eventsApiService;
   }
@@ -22,12 +20,12 @@ export default class EventsModel extends Observable {
       const events = await this.#eventsApiService.events;
       this.#events = events.map(this.#adaptToClient);
 
-      console.log(this.#events);
       const offers = await this.#eventsApiService.offers;
       this.#offers = offers.map(this.#adaptToClient);
+
       const destinations = await this.#eventsApiService.destinations;
       this.#destinations = destinations.map(this.#adaptToClient);
-    } catch(err) {
+    } catch (err) {
       this.#events = [];
     }
 
@@ -55,9 +53,7 @@ export default class EventsModel extends Observable {
   }
 
   async updateEvent(updateType, update) {
-    console.log(update);
     const index = this.#events.findIndex((event) => event.id === update.id);
-    console.log(index);
     if (index === -1) {
       throw new Error('Can\'t update unexisting event');
     }
@@ -71,7 +67,7 @@ export default class EventsModel extends Observable {
         ...this.#events.slice(index + 1),
       ];
       this._notify(updateType, updatedEvent);
-    } catch(err) {
+    } catch (err) {
       throw new Error('Can\'t update event');
     }
 
@@ -102,7 +98,8 @@ export default class EventsModel extends Observable {
   }
 
   #adaptToClient(event) {
-    const adaptedEvent = {...event,
+    const adaptedEvent = {
+      ...event,
       dateFrom: event['date_from'] !== null ? new Date(event['date_from']) : event['date_from'], // На клиенте дата хранится как экземпляр Date
       dateTo: event['date_to'] !== null ? new Date(event['date_to']) : event['date_to'], // На клиенте дата хранится как экземпляр Date,
       isFavorite: event['is_favorite'],

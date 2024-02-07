@@ -25,7 +25,7 @@ export default class EventsApiService extends ApiService {
     const response = await this._load({
       url: `points/${event.id}`,
       method: Method.PUT,
-      body: JSON.stringify(this.#adaptToServer(event)),
+      body: JSON.stringify(this.adaptToServer(event)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
@@ -34,19 +34,19 @@ export default class EventsApiService extends ApiService {
     return parsedResponse;
   }
 
-  #adaptToServer(event) {
+  adaptToServer(event) {
     const adaptedEvent = {...event,
-      'date_From': event.dateFrom instanceof Date ? event.dueDate.toISOString() : null, // На сервере дата хранится в ISO формате
-      'date_to': event.dateTo instanceof Date ? event.dueDate.toISOString() : null, // На сервере дата хранится в ISO формате
+      'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : null, // На сервере дата хранится в ISO формате
+      'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : null, // На сервере дата хранится в ISO формате
       'is_favorite': event.isFavorite,
       'base_price': event.basePrice,
     };
 
     // Ненужные ключи мы удаляем
-    delete adaptedEvent.dueDate;
-    delete adaptedEvent.isArchive;
+    delete adaptedEvent.dateFrom;
+    delete adaptedEvent.dateTo;
     delete adaptedEvent.isFavorite;
-    delete adaptedEvent.repeating;
+    delete adaptedEvent.basePrice;
 
     return adaptedEvent;
   }
