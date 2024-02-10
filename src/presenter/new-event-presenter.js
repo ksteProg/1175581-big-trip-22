@@ -1,6 +1,6 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
 import EditFormView from '../view/edit-form-view.js';
-import { UserAction, UpdateType } from '../mocks/const.js';
+import { UserAction, UpdateType } from '../utils/const.js';
 
 export default class NewEventPresenter {
   #eventListContainer = null;

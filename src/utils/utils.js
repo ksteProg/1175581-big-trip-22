@@ -1,18 +1,12 @@
 import dayjs from 'dayjs';
 import { FilterType, MIN_IN_DAY, MIN_IN_HOUR, MS_IN_MIN } from './const';
 
-const getRandomArrayElement = (array) => array[Math.floor(Math.random() * (array.length - 1))];
-
-const getRandomNumber = () => Math.floor(Math.random() * 99);
-
-const getMultipleRandom = (arr) => {
-  const shuffled = [...arr].sort(() => 0.5 - Math.random());
-
-  return shuffled.slice(0, Math.floor(Math.random() * shuffled.length));
-};
-
 function sortByTime(eventA, eventB) {
   return getEventDuration(eventB) - getEventDuration(eventA);
+}
+
+function sortByDate(eventA, eventB) {
+  return dayjs(eventA.dateFrom) - dayjs(eventB.dateFrom);
 }
 
 function sortByPrice(eventA, eventB) {
@@ -67,4 +61,4 @@ export const filter = {
   [FilterType.FUTURE]: (events) => events.filter((event) => new Date(event.dateFrom) > new Date()),
 };
 
-export { getRandomArrayElement, getRandomNumber, getMultipleRandom, sortByTime, sortByPrice, isDatesEqual, getDurationTime};
+export { sortByTime, sortByPrice,sortByDate, isDatesEqual, getDurationTime};
