@@ -1,39 +1,27 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import dayjs from 'dayjs';
 import { sortByDate } from '../utils/utils.js';
 
 function createTripInfoTemplate(destinations, events, totalPrice) {
   let eventsToShow = [];
   const tripEvents = [...events].sort(sortByDate);
-  // console.log(events);
-  // console.log([...events].sort(sortByDate));
   if (events.length > 3) {
     eventsToShow.push(tripEvents[0], tripEvents[tripEvents.length - 1]);
-    // const dfd = eventsToShow.sort(sortByDate);
-    // userDestinations = destinations.filter((destination) => destinationIds.includes(destination.id));
   } else {
     eventsToShow = tripEvents;
-    // userDestinations = destinations.filter((destination) => destinationIds.includes(destination.id));
   }
 
   const destinationIds = eventsToShow.map((event) => event.destination);
+  const destinationNames = destinationIds.map((destinationId) => destinations.find((destination) => destination.id === destinationId).name);
 
-  const userDestinations = destinations.filter((destination) => destinationIds.includes(destination.id));
-
-  const rrr = destinations.map((destination) => destinationIds.find((destinationId) => destinationId === destination.id));
-  console.log(rrr);
-  console.log(eventsToShow);
-  console.log(destinationIds);
-  console.log(destinations);
-  console.log(userDestinations);
-
-
-
+  const dateFrom = dayjs(eventsToShow[0].dateFrom).format('D MMM');
+  const dateTo = dayjs(eventsToShow[eventsToShow.length - 1].dateTo).format('D MMM');
 
   return (`<section class="trip-main__trip-info  trip-info">
   <div class="trip-info__main">
-    <h1 class="trip-info__title">${userDestinations.map((userDestination) => `${userDestination.name}-`).join('').slice(0,-1)}</h1>
+    <h1 class="trip-info__title">${destinationNames.map((destinationName) => `${destinationName} - `).join('').slice(0, -3)}</h1>
 
-    <p class="trip-info__dates">18&nbsp;&mdash;&nbsp;20 Mar</p>
+    <p class="trip-info__dates">${`${dateFrom} - ${dateTo}`}</p>
   </div>
 
   <p class="trip-info__cost">
