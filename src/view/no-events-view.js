@@ -1,11 +1,11 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { FilterType } from '../mocks/const.js';
+import { FilterType } from '../utils/const.js';
 
 const NoEventsTextType = {
   [FilterType.EVERYTHING]: 'Click «ADD NEW EVENT» in menu to create your first event',
-  [FilterType.FUTURE]: 'There are no overdue events in future',
+  [FilterType.FUTURE]: 'There are no events in future',
   [FilterType.PRESENT]: 'There are no events now',
-  [FilterType.PAST]: 'There are no favorite events in past',
+  [FilterType.PAST]: 'There are no events in past',
 };
 
 function createNoEventsTemplate(filterType) {

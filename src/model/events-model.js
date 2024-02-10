@@ -1,5 +1,5 @@
 import Observable from '../framework/observable.js';
-import { UpdateType } from '../mocks/const.js';
+import { UpdateType } from '../utils/const.js';
 
 export default class EventsModel extends Observable {
   #events = [];
@@ -17,11 +17,10 @@ export default class EventsModel extends Observable {
       const events = await this.#eventsApiService.events;
       this.#events = events.map(this.#adaptToClient);
 
-      const offers = await this.#eventsApiService.offers;
-      this.#offers = offers.map(this.#adaptToClient);
+      this.#offers = await this.#eventsApiService.offers;
 
-      const destinations = await this.#eventsApiService.destinations;
-      this.#destinations = destinations.map(this.#adaptToClient);
+      this.#destinations = await this.#eventsApiService.destinations;
+
     } catch (err) {
       this.#events = [];
     }

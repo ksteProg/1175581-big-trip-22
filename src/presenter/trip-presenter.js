@@ -6,8 +6,8 @@ import NewEventPresenter from './new-event-presenter.js';
 import NoEventsView from '../view/no-events-view.js';
 import LoadingView from '../view/loading-view.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
-import { sortByTime, sortByPrice, filter } from '../mocks/utils.js';
-import { SortType, UpdateType, UserAction, FilterType, TIME_LIMIT } from '../mocks/const.js';
+import { sortByTime, sortByPrice, filter } from '../utils/utils.js';
+import { SortType, UpdateType, UserAction, FilterType, TimeLimit } from '../utils/const.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 export default class TripPresenter {
@@ -20,15 +20,15 @@ export default class TripPresenter {
   #noEventsComponent = null;
   #loadingComponent = new LoadingView();
   #isLoading = true;
-  #tripInfoComponent = new TripInfoView();
+  #tripInfoComponent = null;
   #eventPresenters = new Map();
   #newEventPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
   #onNewEventDestroy = null;
   #uiBlocker = new UiBlocker({
-    lowerLimit: TIME_LIMIT.LOWER_LIMIT,
-    upperLimit: TIME_LIMIT.UPPER_LIMIT
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
   });
 
   constructor({ tripElement, eventsElement, eventsModel, filterModel, onNewEventDestroy }) {
@@ -45,7 +45,7 @@ export default class TripPresenter {
   get events() {
     const events = this.#eventsModel.events;
     this.#filterType = this.#filterModel.filter;
-    const filteredEvents = filter[this.#filterType](events);
+    const filteredEvents = [...filter[this.#filterType](events)];
     switch (this.#currentSortType) {
       case SortType.TIME:
         return filteredEvents.sort(sortByTime);
@@ -67,10 +67,6 @@ export default class TripPresenter {
 
   get destinations() {
     return this.#eventsModel.destinations;
-  }
-
-  init() {
-    this.#renderBoard();
   }
 
   createEvent() {
@@ -123,10 +119,21 @@ export default class TripPresenter {
     this.#uiBlocker.unblock();
   };
 
+  getTotalPrice() {
+    let totalPrice = 0;
+    this.events.forEach((event) => {
+      const offersByType = this.offers.find((item) => item.type === event.type).offers;
+      offersByType.filter((offer) => event.offers.includes(offer.id)).forEach((offer) => {
+        totalPrice += offer.price;
+      });
+      totalPrice += event.basePrice;
+    });
+    return totalPrice;
+  }
+
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this.#eventPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
@@ -140,7 +147,6 @@ export default class TripPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
-        this.#clearBoard();
         this.#renderBoard();
         break;
     }
@@ -175,6 +181,15 @@ export default class TripPresenter {
     render(this.#sortComponent, this.#eventsElement, RenderPosition.AFTERBEGIN);
   }
 
+  #renderTripInfo() {
+    this.#tripInfoComponent = new TripInfoView({
+      destinations: this.destinations,
+      events: [...this.events].sort(sortByTime),
+      totalPrice: this.getTotalPrice()
+    });
+    render(this.#tripInfoComponent, this.#tripElement, RenderPosition.AFTERBEGIN);
+  }
+
   #clearBoard({ resetSortType = false } = {}) {
     if (this.#newEventPresenter !== null) {
       this.#newEventPresenter.destroy();
@@ -186,6 +201,7 @@ export default class TripPresenter {
     remove(this.#sortComponent);
     remove(this.#noEventsComponent);
     remove(this.#loadingComponent);
+    remove(this.#tripInfoComponent);
 
     if (this.#noEventsComponent) {
       remove(this.#noEventsComponent);
@@ -194,10 +210,6 @@ export default class TripPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
-  }
-
-  #renderTripInfo() {
-    render(this.#tripInfoComponent, this.#tripElement, RenderPosition.AFTERBEGIN);
   }
 
   #renderNoEvent() {
@@ -225,11 +237,6 @@ export default class TripPresenter {
     for (const event of this.events) {
       this.#renderEvent(event);
     }
-  }
-
-  #clearEventList() {
-    this.#eventPresenters.forEach((presenter) => presenter.destroy());
-    this.#eventPresenters.clear();
   }
 
   #renderBoard() {

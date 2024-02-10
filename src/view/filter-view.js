@@ -11,11 +11,11 @@ function createFilterItemTemplate(filter, currentFilterType) {
   );
 }
 
-function createFilterTemplate(filters) {
+function createFilterTemplate(filters, currentFilterType) {
   return (
     `<form class="trip-filters" action="#" method="get">
 
-    ${filters.map((filter) => createFilterItemTemplate(filter)).join('')}
+    ${filters.map((filter) => createFilterItemTemplate(filter, currentFilterType)).join('')}
 
     <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
