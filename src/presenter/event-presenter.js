@@ -1,8 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import EventView from '../view/event-view.js';
 import EditFormView from '../view/edit-form-view.js';
-import { UserAction, UpdateType } from '../mocks/const.js';
-import { isDatesEqual } from '../mocks/utils.js';
+import { UserAction, UpdateType } from '../utils/const.js';
+import { isDatesEqual } from '../utils/utils.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -11,7 +11,6 @@ const Mode = {
 
 export default class EventPresenter {
   #eventListContainer = null;
-  #eventsModel = null;
   #eventComponent = null;
   #editFormComponent = null;
   #handleDataChange = null;

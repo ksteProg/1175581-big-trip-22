@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getDurationTime } from '../mocks/utils.js';
+import { getDurationTime } from '../utils/utils.js';
 import dayjs from 'dayjs';
 
 function createOfferTemplate(offersByType, offer) {

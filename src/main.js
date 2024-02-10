@@ -7,7 +7,7 @@ import FilterModel from './model/filter-model.js';
 
 import { render } from './framework/render.js';
 
-const AUTHORIZATION = 'Basic kh34jhh23vvxchikohfio3';
+const AUTHORIZATION = 'Basic kh34jhhd23fsvvxcfdghikoheio3';
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 const filtersElement = document.querySelector('.trip-controls__filters');
@@ -40,9 +40,8 @@ function handleNewEventButtonClick() {
   newEventButtonComponent.element.disabled = true;
 }
 
-filterPresenter.init();
-tripPresenter.init();
 eventsModel.init()
   .finally(() => {
     render(newEventButtonComponent, tripElement);
   });
+filterPresenter.init();

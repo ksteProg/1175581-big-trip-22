@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { DEFAULT_EVENT } from '../mocks/const.js';
+import { DefaultEvent } from '../utils/const.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -24,7 +24,6 @@ function createTypeItemTemplate(type) {
 }
 
 function createEditFormTemplate(types, allOffers, destinations, state) {
-
   const { basePrice, dateFrom, dateTo, type, offers, isDisabled, isDeleting, isSaving } = state;
 
   const destination = destinations.find((dest) => state.destination === dest.id);
@@ -102,9 +101,7 @@ function createEditFormTemplate(types, allOffers, destinations, state) {
 
 export default class EditFormView extends AbstractStatefulView {
   #types = null;
-  #offers = null;
   #allOffers = null;
-  #destination = null;
   #destinations = null;
   #handleFormSubmit = null;
   #handleDeleteClick = null;
@@ -112,7 +109,7 @@ export default class EditFormView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({ types, allOffers, destinations, event = DEFAULT_EVENT, onFormSubmit, onDeleteClick }) {
+  constructor({ types, allOffers, destinations, event = DefaultEvent, onFormSubmit, onDeleteClick }) {
     super();
     this.#types = types;
     this.#allOffers = allOffers;
@@ -267,14 +264,13 @@ export default class EditFormView extends AbstractStatefulView {
 
     const offerId = evt.target.id;
     if (!this._state.offers.includes(offerId)) {
-      const offersByType = this.#allOffers.find((item) => item.type === this._state.type).offers;
-      const offerByType = offersByType.find((item) => item.id === offerId);
       this._setState({
         offers: [...this._state.offers, offerId],
-        basePrice: this._state.basePrice + offerByType.price
       });
     } else {
-      this._state.offers = [...this._state.offers.filter((offer) => offer !== offerId)];
+      this._setState({
+        offers: [...this._state.offers.filter((offer) => offer !== offerId)],
+      });
     }
   };
 

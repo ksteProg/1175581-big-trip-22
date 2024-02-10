@@ -1,7 +1,7 @@
 const SortType = {
-  DEFAULT: 'default',
-  TIME: 'time',
-  PRICE: 'price',
+  DEFAULT: 'DEFAULT',
+  TIME: 'TIME',
+  PRICE: 'PRICE',
 };
 
 const UserAction = {
@@ -24,7 +24,7 @@ const FilterType = {
   PAST: 'PAST',
 };
 
-const DEFAULT_EVENT = {
+const DefaultEvent = {
   id: '',
   basePrice: 0,
   dateFrom: '',
@@ -35,7 +35,7 @@ const DEFAULT_EVENT = {
   type: 'flight',
 };
 
-const TIME_LIMIT = {
+const TimeLimit = {
   LOWER_LIMIT: 350,
   UPPER_LIMIT: 1000,
 };
@@ -45,4 +45,4 @@ export const MS_IN_MIN = 60000;
 export const MIN_IN_HOUR = 60;
 export const MIN_IN_DAY = 1440;
 
-export { SortType, UserAction, UpdateType, FilterType, DEFAULT_EVENT, TIME_LIMIT };
+export { SortType, UserAction, UpdateType, FilterType, DefaultEvent, TimeLimit };
